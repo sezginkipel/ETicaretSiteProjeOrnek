@@ -92,7 +92,7 @@ INSERT INTO `orders` (`id`, `customerID`, `orderDetails`, `orderDate`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `products`
+-- Table structure for table `product`
 --
 
 CREATE TABLE `products` (
@@ -106,7 +106,7 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `products`
+-- Dumping data for table `product`
 --
 
 INSERT INTO `products` (`id`, `categoryID`, `title`, `description`, `imgURL`, `slug`, `price`) VALUES
@@ -162,7 +162,7 @@ ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `products`
+-- Indexes for table `product`
 --
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`);
@@ -202,7 +202,7 @@ ALTER TABLE `orders`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `products`
+-- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `products`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
