@@ -14,6 +14,10 @@ $router->get("sepet", function () {
     loadView('product/cart', 'Sepetim');
 });
 
+$router->get("odeme", function () {
+    loadView('product/payment', 'Ödeme Yap');
+});
+
 $router->post("urun/sepete-ekle", function () {
     global $db;
     $reqData = json_decode(file_get_contents('php://input'));
