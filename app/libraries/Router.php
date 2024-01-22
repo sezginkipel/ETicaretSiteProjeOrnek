@@ -5,7 +5,7 @@ class Router
     {
         if($_SERVER['REQUEST_METHOD'] == 'GET')
         {
-            if($url == @$_GET['url'])
+            if(rtrim($url, '/') == rtrim(@$_GET['url'], '/'))
             {
                 $callback();
             }
