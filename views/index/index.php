@@ -100,9 +100,13 @@ $products = $getProducts->fetchAll(PDO::FETCH_OBJ);
                                 </h5>
                             </div>
 
-                            <div class="card-footer text-center p-3">
-                                <a href="#" class="btn btn-dark w-100 btn-lg">Sepete Ekle</a>
-                            </div>
+                            <form action="<?= BASE_URL ?>urun/sepete-ekle" method="post" id="form_addProductToCart">
+                                <input type="hidden" id="product_id" name="product_id" value="<?= $product->id ?>">
+                                <div class="card-footer text-center p-3">
+                                    <button type="submit" class="btn btn-dark w-100 btn-lg">Sepete Ekle</button>
+                                </div>
+                            </form>
+
                         </div>
                     </div>
                 <?php } ?>
@@ -190,7 +194,51 @@ $products = $getProducts->fetchAll(PDO::FETCH_OBJ);
     }
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script>
+
+    const form_addProductToCart = document.querySelector('#form_addProductToCart');
+
+    form_addProductToCart.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        let productId = document.querySelector('#product_id').value;
+
+        let formData = {
+            productId: productId,
+            productQuantity: 1
+        }
+
+        let postURL = '<?= BASE_URL ?>urun/sepete-ekle';
+
+        fetch(postURL, {
+            method: 'POST',
+            body: JSON.stringify(formData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Ürün Sepete Eklendi',
+                        text: data.message,
+                        showConfirmButton: true
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Bir Hata Oluştu',
+                        text: data.message,
+                        showConfirmButton: true
+                    });
+                }
+            })
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
