@@ -144,7 +144,7 @@ $cartItems = $getCartItems->fetchAll(PDO::FETCH_OBJ);
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-dark w-100 btn-lg mt-2 mb-2">Ödeme Yap</button>
+                        <a href="<?=BASE_URL?>odeme" class="btn btn-dark w-100 btn-lg mt-2 mb-2">Ödeme Yap</a>
                     </div>
                 </div>
 
