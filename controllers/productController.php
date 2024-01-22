@@ -10,29 +10,47 @@ $router->post("urun/ara", function () {
     loadView('product/search', 'Arama Sonuçları');
 });
 
+$router->get("sepet", function () {
+    loadView('product/cart', 'Sepetim');
+});
+
 $router->post("urun/sepete-ekle", function () {
     global $db;
-    $productId = removeSpecialChars($_POST['productId']);
+    $reqData = json_decode(file_get_contents('php://input'));
+    $productId = removeSpecialChars($reqData->productId);
+    $inputQuantity = removeSpecialChars($reqData->productQuantity);
+
+    if ($inputQuantity < 1){
+        $response = [
+            'status' => 'error',
+            'message' => 'Lütfen geçerli bir adet girin!'
+        ];
+        header('Content-Type: application/json');
+        echo json_encode($response);
+        exit;
+    }
 
     if (isset($_SESSION['user'])) {
         // Üyeyse ve giriş yaptıysa sepete ekle
-        $userId = $_SESSION['user']['id'];
+        $userSessionObj = $_SESSION['user'];
+        $userId = $userSessionObj->id;
 
-        $getCartQuery = $db->prepare("SELECT * FROM carts WHERE userID = :userID");
+        $getCartQuery = $db->prepare("SELECT * FROM cart WHERE userID = :userID");
         $getCartQuery->bindParam(':userID', $userId, PDO::PARAM_INT);
         $getCartQuery->execute();
         $getCart = $getCartQuery->fetch(PDO::FETCH_OBJ);
 
-        if($getCart->rowCount() > 0){ // Sepet varsa
+        if($getCartQuery->rowCount() > 0){ // Sepet varsa
             $getCartItemsQuery = $db->prepare("SELECT * FROM cartitems WHERE cartId = :cartId AND productId = :productId");
             $getCartItemsQuery->bindParam(':cartId', $getCart->id, PDO::PARAM_INT);
             $getCartItemsQuery->bindParam(':productId', $productId, PDO::PARAM_INT);
             $getCartItemsQuery->execute();
 
             if($getCartItemsQuery->rowCount() >= 1){ // Sepette ürün varsa ürünü güncelle
-                $updateCartItemQuery = $db->prepare("UPDATE cartitems SET quantity = quantity + 1 WHERE cartId = :cartId AND productId = :productId");
+                $updateCartItemQuery = $db->prepare("UPDATE cartitems SET quantity = quantity + :quantity WHERE cartId = :cartId AND productId = :productId");
                 $updateCartItemQuery->bindParam(':cartId', $getCart->id, PDO::PARAM_INT);
                 $updateCartItemQuery->bindParam(':productId', $productId, PDO::PARAM_INT);
+                $updateCartItemQuery->bindParam(':quantity', $inputQuantity, PDO::PARAM_INT);
                 $updateCartItemQuery->execute();
                 $response = [
                     'status' => 'success',
@@ -44,8 +62,7 @@ $router->post("urun/sepete-ekle", function () {
                 $addCartItemQuery = $db->prepare("INSERT INTO cartitems (cartId, productId, quantity) VALUES (:cartId, :productId, :quantity)");
                 $addCartItemQuery->bindParam(':cartId', $getCart->id, PDO::PARAM_INT);
                 $addCartItemQuery->bindParam(':productId', $productId, PDO::PARAM_INT);
-                $addCartItemQuery->bindParam(':quantity', $quantity, PDO::PARAM_INT);
-                $quantity = 1;
+                $addCartItemQuery->bindParam(':quantity', $inputQuantity, PDO::PARAM_INT);
                 $addCartItemQuery->execute();
                 $response = [
                     'status' => 'success',
@@ -55,15 +72,15 @@ $router->post("urun/sepete-ekle", function () {
                 echo json_encode($response);
             }
         }else{ // Sepet yoksa sepet oluştur ve ürünü ekle
-            $addCartQuery = $db->prepare("INSERT INTO carts (userID) VALUES (:userID)");
+            $addCartQuery = $db->prepare("INSERT INTO cart (userID) VALUES (:userID)");
             $addCartQuery->bindParam(':userID', $userId, PDO::PARAM_INT);
             $addCartQuery->execute();
+            $addCartFetch = $addCartQuery->fetch(PDO::FETCH_OBJ);
 
             $addCartItemQuery = $db->prepare("INSERT INTO cartitems (cartId, productId, quantity) VALUES (:cartId, :productId, :quantity)");
-            $addCartItemQuery->bindParam(':cartId', $addCartItemQuery->lastInsertId(), PDO::PARAM_INT);
+            $addCartItemQuery->bindParam(':cartId', $addCartFetch->lastInsertId(), PDO::PARAM_INT);
             $addCartItemQuery->bindParam(':productId', $productId, PDO::PARAM_INT);
-            $addCartItemQuery->bindParam(':quantity', $quantity, PDO::PARAM_INT);
-            $quantity = 1;
+            $addCartItemQuery->bindParam(':quantity', $inputQuantity, PDO::PARAM_INT);
             $addCartItemQuery->execute();
             $response = [
                 'status' => 'success',
@@ -77,7 +94,7 @@ $router->post("urun/sepete-ekle", function () {
     } else {
         // Üye değilse cookie'ye ekle
         $_COOKIE['cart'] = json_encode([
-            'products' => [
+            'product' => [
                 [
                     'id' => $productId,
                     'quantity' => 1
