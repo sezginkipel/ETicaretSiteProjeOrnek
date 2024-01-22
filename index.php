@@ -7,3 +7,5 @@ require_once 'controllers/indexController.php';
 require_once 'controllers/userController.php';
 require_once 'controllers/categoryController.php';
 require_once 'controllers/productController.php';
+
+require_once 'controllers/adminController.php';
