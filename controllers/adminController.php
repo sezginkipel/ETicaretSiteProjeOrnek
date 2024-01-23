@@ -5,8 +5,6 @@ $router->get('yonetim-paneli', function (){
     loadView('admin/index/index', 'Yönetim Paneli');
 });
 
-
-
 /*| Ürünlerle ilgili yönetimsel işlemler |*/
 $router->get('yonetim-paneli/urunler/ekle', function (){
     loadView('admin/product/add', 'Ürün Ekle');
