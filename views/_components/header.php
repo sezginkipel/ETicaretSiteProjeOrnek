@@ -11,15 +11,18 @@
 <?php
 global $db;
 
-$getCart = $db->prepare('SELECT * FROM cart WHERE userID = :userID');
-$getCart->bindParam(':userID', $_SESSION['user']->id, PDO::PARAM_INT);
-$getCart->execute();
-$cart = $getCart->fetch(PDO::FETCH_OBJ);
+if (isset($_SESSION) && isset($_SESSION['user'])) {
+    $getCart = $db->prepare('SELECT * FROM cart WHERE userID = :userID');
+    $getCart->bindParam(':userID', $_SESSION['user']->id, PDO::PARAM_INT);
+    $getCart->execute();
+    $cart = $getCart->fetch(PDO::FETCH_OBJ);
 
-$getCartItems = $db->prepare('SELECT * FROM cartitems WHERE cartId = :cartId');
-$getCartItems->bindParam(':cartId', $cart->id, PDO::PARAM_INT);
-$getCartItems->execute();
-
+    if ($getCart->rowCount() > 0) {
+        $getCartItems = $db->prepare('SELECT * FROM cartitems WHERE cartId = :cartId');
+        $getCartItems->bindParam(':cartId', $cart->id, PDO::PARAM_INT);
+        $getCartItems->execute();
+    }
+}
 ?>
 
 <header class="position-relative">
@@ -34,7 +37,7 @@ $getCartItems->execute();
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="<?=BASE_URL?>">Ana Sayfa</a>
+                        <a class="nav-link" aria-current="page" href="<?= BASE_URL ?>">Ana Sayfa</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>kategoriler">Kategoriler</a>
@@ -59,7 +62,7 @@ $getCartItems->execute();
                     </form>
 
                     <a href="<?= BASE_URL ?>sepet" class="btn btn-outline-dark me-1">
-                        <span class="badge text-bg-dark"><?=$getCartItems->rowCount()?></span>
+                        <span class="badge text-bg-dark"><?php if (isset($cart) && $getCart->rowCount() > 0) echo $getCart->rowCount(); ?></span>
                         🛒
                     </a>
 
