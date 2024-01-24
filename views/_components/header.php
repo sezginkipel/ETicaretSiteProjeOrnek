@@ -34,7 +34,7 @@ $getCartItems->execute();
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Ana Sayfa</a>
+                        <a class="nav-link" aria-current="page" href="<?=BASE_URL?>">Ana Sayfa</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>kategoriler">Kategoriler</a>
