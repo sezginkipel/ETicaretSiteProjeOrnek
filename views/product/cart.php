@@ -2,14 +2,21 @@
 <?php
 
 global $db;
-$getCart = $db->prepare('SELECT * FROM cart WHERE userID = :userID');
-$getCart->bindParam(':userID', $_SESSION['user']->id, PDO::PARAM_INT);
-$getCart->execute();
 
-$getCartItems = $db->prepare('SELECT * FROM cartitems WHERE cartId = :cartId');
-$getCartItems->bindParam(':cartId', $getCart->fetch(PDO::FETCH_OBJ)->id, PDO::PARAM_INT);
-$getCartItems->execute();
-$cartItems = $getCartItems->fetchAll(PDO::FETCH_OBJ);
+if(isset($_SESSION) && isset($_SESSION['user'])){
+    $getCart = $db->prepare('SELECT * FROM cart WHERE userID = :userID');
+    $getCart->bindParam(':userID', $_SESSION['user']->id, PDO::PARAM_INT);
+    $getCart->execute();
+
+    $getCartItems = $db->prepare('SELECT * FROM cartitems WHERE cartId = :cartId');
+    $getCartItems->bindParam(':cartId', $getCart->fetch(PDO::FETCH_OBJ)->id, PDO::PARAM_INT);
+    $getCartItems->execute();
+    $cartItems = $getCartItems->fetchAll(PDO::FETCH_OBJ);
+}else{
+    die("<h1 class='text-center mt-5'>Sepetinizi görmek için <a href='" . BASE_URL . "giris'>giriş</a> yapınız.</h1>");
+}
+
+
 ?>
 
 <section id="cart">
