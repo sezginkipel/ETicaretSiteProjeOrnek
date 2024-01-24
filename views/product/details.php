@@ -14,7 +14,7 @@ if ($getProduct->rowCount() == 0) {
 $product = $getProduct->fetch(PDO::FETCH_OBJ);
 ?>
 <section id="categories">
-    <div class="container mt-5 mb-5 bg-light p-5 rounded-3 shadow">
+    <div class="container mt-5 mb-5 bg-light p-5 rounded-3 shadow overflow-dhidden">
         <div class="row row-cols-2 row-gap-3">
             <div class="col">
                 <img src="<?= $product->imgURL ?>" alt="<?= $product->name ?>" class="img-fluid">
@@ -31,7 +31,8 @@ $product = $getProduct->fetch(PDO::FETCH_OBJ);
 
                         <div class="mb-3 input-group">
                             <span class="input-group-text bg-dark text-light">Adet</span>
-                            <input type="number" id="quantity" name="quantity" class="form-control" min="1" max="10" value="1">
+                            <input type="number" id="quantity" name="quantity" class="form-control" min="1" max="10"
+                                   value="1">
                             <button class="btn btn-dark" type="submit" id="addToCartBtn">Sepete Ekle</button>
 
                         </div>
@@ -47,7 +48,9 @@ $product = $getProduct->fetch(PDO::FETCH_OBJ);
                 <hr>
             </div>
             <div class="col-12">
-                <p><?= htmlspecialchars_decode($product->description) ?></p>
+                <span>
+                    <?= (str_replace(['<pre>', '</pre>', '<script>'], '', nl2br(htmlspecialchars_decode($product->description)))) ?>
+                </span>
             </div>
         </div>
 </section>
