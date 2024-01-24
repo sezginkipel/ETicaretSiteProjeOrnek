@@ -39,8 +39,36 @@ $categories = $getCategories->fetchAll(PDO::FETCH_OBJ)
 
                         <div class="mb-3">
                             <label for="">Ürün Görseli</label>
-                            <input type="text" id="product_img" name="product_img" class="form-control"
-                                   placeholder="Ürün görseli" required>
+                            <div class="productImg_imgUrl">
+                                <input type="text" id="product_img" name="product_img" class="form-control"
+                                       placeholder="Ürün görseli bağlantısı" required>
+                                <button type="button" class="btn btn-sm btn-outline-dark mt-2" id="uploadProductImageButton">Dosya Yükle</button>
+                            </div>
+
+                            <div id="productImg_uploadFile" style="display: none">
+                                <input type="file" id="product_imgFile" name="product_imgFile" class="form-control" required>
+                                <div class="form-text">Ürün görseli yüklemek için tıklayın.</div>
+                                <button type="button" class="btn btn-sm btn-outline-dark mt-2" id="enterImageURLButton">Görsel Bağlantısı Gir</button>
+                            </div>
+
+                            <script>
+                                const enterImageURLButton = document.querySelector('#enterImageURLButton');
+                                const uploadProductImageButton = document.querySelector('#uploadProductImageButton');
+
+                                const productImg_imgUrl = document.querySelector('.productImg_imgUrl');
+                                const productImg_uploadFile = document.querySelector('#productImg_uploadFile');
+
+                                enterImageURLButton.addEventListener('click', () => {
+                                    productImg_imgUrl.style.display = 'block';
+                                    productImg_uploadFile.style.display = 'none';
+                                });
+
+                                uploadProductImageButton.addEventListener('click', () => {
+                                    productImg_imgUrl.style.display = 'none';
+                                    productImg_uploadFile.style.display = 'block';
+                                });
+                            </script>
+
                         </div>
 
                         <div class="mb-3">
@@ -69,6 +97,55 @@ $categories = $getCategories->fetchAll(PDO::FETCH_OBJ)
     </div>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    const product_imgFile = document.querySelector('#product_imgFile');
+    const product_img = document.querySelector('#product_img');
+
+    product_imgFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('product_imgFile', file);
+
+        let postURL = '<?= BASE_URL . 'yonetim-paneli/urunler/gorsel-yukle' ?>';
+        console.log(formData);
+
+        fetch(postURL, {
+            method: 'POST',
+            body: formData
+        })
+
+
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    product_img.value = data.fileUrl;
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Ürün Görseli Yüklendi',
+                        text: data.message,
+                        showConfirmButton: true,
+                        timer: 5000
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Bir Hata Oluştu',
+                        text: data.message,
+                        showConfirmButton: true,
+                        timer: 5000
+                    });
+                }
+            })
+    });
+</script>
+
+
+
+
+
+
 
 <script>
     tinymce.init({
