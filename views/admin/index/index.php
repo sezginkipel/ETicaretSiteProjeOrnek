@@ -2,7 +2,7 @@
 
 <?php
 global $db;
-$getProducts = $db->prepare("SELECT * FROM product ORDER BY id DESC LIMIT 18");
+$getProducts = $db->prepare("SELECT * FROM products ORDER BY id DESC LIMIT 18");
 $getProducts->execute();
 $products = $getProducts->fetchAll(PDO::FETCH_OBJ);
 ?>
